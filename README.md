@@ -10,7 +10,7 @@
 
 这是 NebulaLab 的插件生态仓库，包含官方插件、插件市场索引、开发 SDK 和开发文档。
 
-仓库归属调整至 PTJ Works 的兼容安排见[组织迁移说明](./docs/organization-migration.md)。现有插件索引、版本、校验值和作者身份保持不变。
+本仓库已迁至 [PTJ Works](https://github.com/ptjworks/NebulaLab-Plugins)，兼容安排见[组织迁移说明](./docs/organization-migration.md)。现有插件索引、版本、校验值和作者身份保持不变。
 
 ## 安装插件和主题（用户）
 
