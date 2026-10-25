@@ -56,7 +56,7 @@ Nebula Lab 直接读取本仓库 `main` 分支根目录下的 `plugins-index.jso
 
 ## 提交到主题市场
 
-1. 在自己的仓库发布主题 Release（zip 包）。zip 根目录（或唯一的顶层文件夹）里要有 `theme.json`，其 `id`、`version`、`color_scheme`、`background_image_url` 与索引条目一致
+1. 在自己的仓库发布主题 Release（zip 包）。zip 根目录（或唯一的顶层文件夹）里要有 `theme.json`，其 `id`、`version`、`color_scheme`、`background_image_url` 与索引条目一致（索引条目不写 `background_image_url` 时，`theme.json` 里也不能有）
 2. 计算 zip 的 sha256 校验值
 3. 准备索引条目必填字段：`id`、`name`、`version`、`author`、`source`、`description`、`color_scheme`（`light` 或 `dark`）、`download_url`、`sha256`、`homepage`、`preview_image_url`、`min_app_version`、`tags`、`accessibility_notes`；`background_image_url` 可选
 4. Fork 本仓库，在 `themes-index.json` 添加条目；PR 只能修改这一个文件，否则主题校验直接失败
@@ -77,7 +77,7 @@ Nebula Lab 直接读取本仓库 `main` 分支根目录下的 `plugins-index.jso
    gh release upload plugins dist/plugins/<id>-<version>.zip --repo ptjworks/NebulaLab-Plugins
    ```
 
-   zip 文件名带版本号。改了源码却不升级版本，会打出 sha256 不同的同名 zip；覆盖上传后，现有索引条目的校验值就对不上了。
+   zip 文件名带版本号。改了源码却不升级版本，会打出 sha256 不同的同名 zip；覆盖上传后，现有索引条目的校验值就对不上了。所以上传因同名资产已存在而失败时，不要加 `--clobber` 覆盖，应升级版本后重新打包。
 
 打包脚本的 `--repo` 默认值仍是迁移前的地址，新发布的包要显式指定 `--repo ptjworks/NebulaLab-Plugins`，原因见[组织迁移说明](./docs/organization-migration.md)。
 
@@ -162,7 +162,7 @@ See the [Contributing Guide](./docs/contributing.md) for full details.
 
 **Plugins:** publish a release zip whose root (or single top-level folder) contains a `plugin.json` matching the index entry's `id` and `version` and declaring `operations`, `importers` or `panel` (`__init__.py` is required for operations/importers, the `.html` file for a panel) → add an entry to `plugins-index.json`, changing no other file → open a PR. CI checks the index format, downloads the referenced zip, and verifies its sha256, package structure and basic risk patterns. Required index fields: `id` (lowercase letters, digits, `-`, `_`), `name`, `version` (`x.y.z`), `source` (`official` or `community`), `download_url`, `homepage`, `sha256` (64 hex characters), plus `source_url` for community plugins and `author_github` with `author_url` (`https://github.com/<author_github>`) for official ones; `logo_url` is optional. All URLs must use `https://`.
 
-**Themes:** publish a release zip whose root (or single top-level folder) contains a `theme.json` matching the index entry's `id`, `version`, `color_scheme` and `background_image_url` → add an entry to `themes-index.json`, changing no other file (otherwise theme validation fails) → open a PR. CI checks the index format, downloads the referenced zip, and verifies its sha256 and `theme.json`. Required index fields: `id`, `name`, `version`, `author`, `source`, `description`, `color_scheme` (`light` or `dark`), `download_url`, `sha256`, `homepage`, `preview_image_url`, `min_app_version`, `tags`, `accessibility_notes`; `background_image_url` is optional.
+**Themes:** publish a release zip whose root (or single top-level folder) contains a `theme.json` matching the index entry's `id`, `version`, `color_scheme` and `background_image_url` (if the index entry omits `background_image_url`, `theme.json` must omit it too) → add an entry to `themes-index.json`, changing no other file (otherwise theme validation fails) → open a PR. CI checks the index format, downloads the referenced zip, and verifies its sha256 and `theme.json`. Required index fields: `id`, `name`, `version`, `author`, `source`, `description`, `color_scheme` (`light` or `dark`), `download_url`, `sha256`, `homepage`, `preview_image_url`, `min_app_version`, `tags`, `accessibility_notes`; `background_image_url` is optional.
 
 After CI passes, a maintainer must approve the PR before it is merged.
 
@@ -175,7 +175,7 @@ python scripts/package_official_plugin.py <plugin-folder-or-id> --repo ptjworks/
 gh release upload plugins dist/plugins/<id>-<version>.zip --repo ptjworks/NebulaLab-Plugins
 ```
 
-The zip name includes the version. Changing the sources without a version bump produces a same-named zip with a different sha256, and overwriting the uploaded asset breaks the existing index entry's checksum.
+The zip name includes the version. Changing the sources without a version bump produces a same-named zip with a different sha256, and overwriting the uploaded asset breaks the existing index entry's checksum. If the upload fails because an asset with that name already exists, bump the version and repackage rather than overwriting it with `--clobber`.
 
 The packager's `--repo` default still points at the pre-migration location, so pass `--repo ptjworks/NebulaLab-Plugins` explicitly for new packages; see the [organization migration notes](./docs/organization-migration.md).
 
