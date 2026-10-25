@@ -1,0 +1,46 @@
+name: Marketplace Compatibility
+
+on:
+  pull_request:
+    paths:
+      - 'plugins-index.json'
+      - 'themes-index.json'
+      - '.github/scripts/**'
+      - '.github/workflows/marketplace-compatibility.yml'
+      - 'scripts/verify_marketplace_endpoints.py'
+      - 'tests/test_marketplace_migration.py'
+  workflow_dispatch:
+    inputs:
+      include_destination:
+        description: Verify ptjworks endpoints too (only after transfer)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install focused validation dependency
+        run: python -m pip install pytest
+      - name: Validate index schemas and compatibility behavior
+        run: |
+          python .github/scripts/validate_index.py
+          python .github/scripts/validate_themes_index.py
+          python -m pytest -q tests/test_validate_index_author_metadata.py tests/test_validate_plugins_author_metadata.py tests/test_marketplace_migration.py
+      - name: Verify published indexes, ZIP digests and manifests
+        env:
+          INCLUDE_DESTINATION: ${{ inputs.include_destination == true && 'true' || 'false' }}
+        run: |
+          if [ "$INCLUDE_DESTINATION" = true ]; then
+            python scripts/verify_marketplace_endpoints.py --include-destination
+          else
+            python scripts/verify_marketplace_endpoints.py
+          fi
