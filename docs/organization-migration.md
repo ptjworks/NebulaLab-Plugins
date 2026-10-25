@@ -1,7 +1,8 @@
 # PTJ Works ownership transition
 
-The destination is `ptjworks/NebulaLab-Plugins`. The existing repository is
-transferred with its name, history, `plugins` release and assets preserved.
+The public repository transferred to `ptjworks/NebulaLab-Plugins` on
+2026-10-25. Repository ID `1210416222` identifies the same repository before
+and after transfer; its name, history, `plugins` release and assets are preserved.
 No private application repository is part of this change.
 
 ## Existing clients and indexes
@@ -40,12 +41,15 @@ repository runner is exposed to public pull requests.
 `Marketplace Compatibility` validates index schemas and the migration probe,
 then downloads actual published ZIPs and checks digest, archive safety, manifest
 identity/version and required files through the existing asset validators.
-Before transfer it checks the legacy routes. After transfer run:
+Before transfer it checks the legacy routes. Under `ptjworks` it automatically
+checks both owners. To repeat the post-transfer check explicitly, run:
 
 ```sh
 gh workflow run marketplace-compatibility.yml --repo ptjworks/NebulaLab-Plugins -f include_destination=true
 ```
 
-The probe checks both old and new index routes, actual plugin ZIP routes and
-icons, and rejects mismatching indexes or contents. This is network/package
-acceptance, not a substitute for complete desktop/Tauri installation acceptance.
+The probe checks both old and new index routes and actual plugin ZIP routes.
+For icons it checks reachability and equality of downloaded byte digests across
+the two owners; it does not decode images or assess their appearance. It rejects
+mismatching indexes or asset contents. This is network/package acceptance, not
+a substitute for complete desktop/Tauri installation acceptance.
