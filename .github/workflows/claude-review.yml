@@ -4,8 +4,6 @@ on:
   pull_request:
     types: [opened, reopened, ready_for_review]
     branches: [main]
-  issue_comment:
-    types: [created]
 
 jobs:
   auto-review:
@@ -75,24 +73,3 @@ jobs:
             4. 有无破坏性变更影响现有用户
             5. 改动是否真正解决了关联 Issue 的需求
             请用中文回复，给出具体的行内建议。
-
-  on-demand-review:
-    name: On-demand Review via @claude
-    if: |
-      github.event_name == 'issue_comment' &&
-      github.event.issue.pull_request != null &&
-      contains(github.event.comment.body, '@claude')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - uses: anthropics/claude-code-action@beta
-        with:
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          model: claude-opus-4-8
