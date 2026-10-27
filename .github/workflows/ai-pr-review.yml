@@ -1,6 +1,6 @@
 name: AI PR Review
 
-# Thin caller: logic lives in TshyGO/ci-central (reusable workflow).
+# Thin caller: logic lives in ptjworks/ci-central (reusable workflow).
 # Model/provider policy lives there. This caller only maps stable Lane credential slots.
 
 on:
@@ -172,7 +172,7 @@ jobs:
         )
       )
     # Keep this uses pin and central_workflow_sha identical; caller review enforces this trust boundary.
-    uses: TshyGO/ci-central/.github/workflows/pr-review.yml@5314fba75e7e0132d7cd77f74505a3f6c31129aa
+    uses: ptjworks/ci-central/.github/workflows/pr-review.yml@5314fba75e7e0132d7cd77f74505a3f6c31129aa
     permissions:
       contents: read
       issues: write
